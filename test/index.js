@@ -5,12 +5,13 @@ const ethUtil = require('ethereumjs-util')
 const BN = ethUtil.BN
 const mockEncryptor = require('./lib/mock-encryptor')
 const sinon = require('sinon')
+const argon2 = require('argon2-wasm')
 
 describe('KeyringController', () => {
   let keyringController
   const password = 'password123'
-  const seedWords = 'puzzle seed penalty soldier say clay field arctic metal hen cage runway'
-  const addresses = ['0xeF35cA8EbB9669A35c31b5F6f249A9941a812AC1'.toLowerCase()]
+  const seedWords = 'evil saddle unveil lounge behind that zone circle drill pilot fat faint axis file rotate sunset today bus decorate review today minor duck mad'
+  const addresses = ['0x410D5D17C59300145ed11E5FB6451F0f4380522b'.toLowerCase()]
   const accounts = []
   // let originalKeystore
 
@@ -65,8 +66,10 @@ describe('KeyringController', () => {
       await keyringController.createNewVaultAndKeychain(password)
       const vault = keyringController.store.getState().vault
       assert(vault, 'vault created')
-      keyringController.encryptor.encrypt.args.forEach(([actualPassword]) => {
-        assert.equal(actualPassword, password)
+      keyringController.encryptor.encrypt.args.forEach(([subkey]) => {
+        const TextEncoder = require('util').TextEncoder
+        const subkeyEncoded = new TextEncoder('utf-8').encode(subkey)
+        assert(subkeyEncoded.length, 32)
       })
     })
   })
@@ -83,6 +86,18 @@ describe('KeyringController', () => {
       const expectedAllAccounts = previousAccounts.concat(expectedKeyringAccounts)
       assert.deepEqual(allAccounts, expectedAllAccounts, 'allAccounts match expectation')
     })
+    it('HD Key Tree', async () => {
+      const previousAccounts = await keyringController.getAccounts()
+      const keyring = await keyringController.addNewKeyring('HD Key Tree', {
+        numberOfAccounts: 1,
+        password: 'abcdef'
+      })
+      const keyringAccounts = await keyring.getAccounts()
+      assert.equal(keyringAccounts.length, 1, 'created 1 new account')
+      const allAccounts = await keyringController.getAccounts()
+      assert.deepEqual(allAccounts.length, 1 + previousAccounts.length,
+        'allAccounts match expectation')
+    })
   })
 
   describe('#restoreKeyring', () => {
@@ -92,6 +107,7 @@ describe('KeyringController', () => {
         data: {
           mnemonic: seedWords,
           numberOfAccounts: 1,
+          password: 'abc'
         },
       }
 

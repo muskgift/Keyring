@@ -33,10 +33,12 @@
     "sinon": "^7.2.7"
   },
   "dependencies": {
+    "argon2-wasm": "^0.9.0",
     "bip39": "^2.4.0",
     "bluebird": "^3.5.0",
+    "brave-crypto": "^0.2.2",
     "browser-passworder": "^2.0.3",
-    "eth-hd-keyring": "^2.0.0",
+    "eth-hd-keyring": "brave-experiments/eth-hd-keyring#staging",
     "eth-sig-util": "^1.4.0",
     "eth-simple-keyring": "^2.0.0",
     "ethereumjs-util": "^5.1.2",

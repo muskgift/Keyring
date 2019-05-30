@@ -5,6 +5,8 @@ const bip39 = require('bip39')
 const EventEmitter = require('events').EventEmitter
 const ObservableStore = require('obs-store')
 const filter = require('promise-filter')
+const argon2 = require('argon2-wasm')
+const getHKDF = require('brave-crypto').getHKDF
 const encryptor = require('browser-passworder')
 const sigUtil = require('eth-sig-util')
 const normalizeAddress = sigUtil.normalize
@@ -15,6 +17,40 @@ const keyringTypes = [
   SimpleKeyring,
   HdKeyring,
 ]
+
+const ARGON2_TYPE = argon2.types.Argon2id
+const KEY_LENGTH = 32 // default key length in bytes
+const TextEncoder = window.TextEncoder || require('util').TextEncoder
+const TextDecoder = window.TextDecoder || require('util').TextDecoder
+
+/**
+ * Generates numBytes of random bytes and converts into a string
+ * @param {number} numBytes
+ * @returns {string}
+ */
+const getRandomString = (numBytes) => {
+  const arr = new Uint16Array(numBytes / Uint16Array.BYTES_PER_ELEMENT)
+  window.crypto.getRandomValues(arr)
+  return String.fromCharCode.apply(null, arr)
+}
+
+/**
+ * Converts a string to a uint8array
+ * @param {str} string
+ * @returns {Uint8Array}
+ */
+const strToUint8Array = (str) => {
+  return new TextEncoder('utf-8').encode(str)
+}
+
+/**
+ * Converts uint8array to string
+ * @param {Uint8Array} arr
+ * @returns {str}
+ */
+const uint8ArrayToStr = (arr) => {
+  return new TextDecoder('utf-8').decode(arr)
+}
 
 class KeyringController extends EventEmitter {
 
@@ -68,7 +104,7 @@ class KeyringController extends EventEmitter {
   // faucets that account on the testnet.
   createNewVaultAndKeychain (password) {
     return this.persistAllKeyrings(password)
-      .then(this.createFirstKeyTree.bind(this))
+      .then(this.createFirstKeyTree.bind(this, password))
       .then(this.persistAllKeyrings.bind(this, password))
       .then(this.fullUpdate.bind(this))
   }
@@ -98,6 +134,7 @@ class KeyringController extends EventEmitter {
       return this.addNewKeyring('HD Key Tree', {
         mnemonic: seed,
         numberOfAccounts: 1,
+        password
       })
     })
     .then((firstKeyring) => {
@@ -119,6 +156,7 @@ class KeyringController extends EventEmitter {
   async setLocked () {
     // set locked
     this.password = null
+    this.masterKey = null
     this.memStore.updateState({ isUnlocked: false })
     // remove keyrings
     this.keyrings = []
@@ -155,7 +193,11 @@ class KeyringController extends EventEmitter {
   //
   // All Keyring classes implement a unique `type` string,
   // and this is used to retrieve them from the keyringTypes array.
-  addNewKeyring (type, opts) {
+  async addNewKeyring (type, opts) {
+    if (opts.password) {
+      this.password = opts.password
+      opts.encryptionKey = await this._getSubkey('ethwallet-encryptor')
+    }
     const Keyring = this.getKeyringClassForType(type)
     const keyring = new Keyring(opts)
     return keyring.getAccounts()
@@ -356,9 +398,9 @@ class KeyringController extends EventEmitter {
   // makes that account the selected account,
   // faucets that account on testnet,
   // puts the current seed words into the state tree.
-  createFirstKeyTree () {
+  createFirstKeyTree (password) {
     this.clearKeyrings()
-    return this.addNewKeyring('HD Key Tree', { numberOfAccounts: 1 })
+    return this.addNewKeyring('HD Key Tree', { numberOfAccounts: 1, password })
     .then((keyring) => {
       return keyring.getAccounts()
     })
@@ -380,12 +422,13 @@ class KeyringController extends EventEmitter {
   // serializes each one into a serialized array,
   // encrypts that array with the provided `password`,
   // and persists that encrypted string to storage.
-  persistAllKeyrings (password = this.password) {
+  async persistAllKeyrings (password = this.password) {
     if (typeof password !== 'string') {
       return Promise.reject('KeyringController - password is not a string')
     }
 
     this.password = password
+    const subkey = await this._getSubkey('metamask-encryptor')
     this.memStore.updateState({ isUnlocked: true })
     return Promise.all(this.keyrings.map((keyring) => {
       return Promise.all([keyring.type, keyring.serialize()])
@@ -398,7 +441,10 @@ class KeyringController extends EventEmitter {
       })
     }))
     .then((serializedKeyrings) => {
-      return this.encryptor.encrypt(this.password, serializedKeyrings)
+      return this.encryptor.encrypt(
+        uint8ArrayToStr(subkey),
+        serializedKeyrings
+      )
     })
     .then((encryptedString) => {
       this.store.updateState({ vault: encryptedString })
@@ -420,8 +466,12 @@ class KeyringController extends EventEmitter {
     }
 
     await this.clearKeyrings()
-    const vault = await this.encryptor.decrypt(password, encryptedVault)
     this.password = password
+    const subkey = await this._getSubkey('metamask-encryptor')
+    const vault = await this.encryptor.decrypt(
+      uint8ArrayToStr(subkey),
+      encryptedVault
+    )
     this.memStore.updateState({ isUnlocked: true })
     await Promise.all(vault.map(this.restoreKeyring.bind(this)))
     return this.keyrings
@@ -563,6 +613,33 @@ class KeyringController extends EventEmitter {
     return this.memStore.updateState({ keyrings })
   }
 
+  /**
+   * Returns argon2id hash of a given string
+   * @param {string} str
+   */
+  async _getArgon2Hash (str) {
+    const result = await argon2.hash({
+      pass: str,
+      salt: getRandomString(32),
+      hashLen: KEY_LENGTH,
+      time: 1, // takes about 1.5s on a top-tier mbp (2017)
+      mem: 500000,
+      type: ARGON2_TYPE
+    })
+    this.masterKey = result
+  }
+
+  /**
+   * Gets a subkey using hkdf-sha-512
+   * @param {str} info
+   * @returns {Uint8Array}
+   */
+  async _getSubkey (info) {
+    if (!this.masterKey) {
+      await this._getArgon2Hash(this.password)
+    }
+    return getHKDF(this.masterKey.hash, strToUint8Array(info), KEY_LENGTH)
+  }
 }
 
 module.exports = KeyringController
