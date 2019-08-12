@@ -4,7 +4,7 @@
   "description": "A module for managing various keyrings of Ethereum accounts, encrypting them, and using them.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require test/helper.js test/index.js"
+    "test": "mocha --require test/helper.js test/index.js --timeout 4000"
   },
   "repository": {
     "type": "git",
