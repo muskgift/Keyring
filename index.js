@@ -69,7 +69,7 @@ class KeyringController extends EventEmitter {
     this.memStore = new ObservableStore({
       isUnlocked: false,
       keyringTypes: this.keyringTypes.map(krt => krt.type),
-      keyrings: [],
+      keyrings: []
     })
 
     this.encryptor = opts.encryptor || encryptor
@@ -504,14 +504,16 @@ class KeyringController extends EventEmitter {
   // Attempts to unlock the persisted encrypted storage,
   // initializing the persisted keyrings to RAM.
   async unlockKeyrings (password) {
-    const encryptedVault = this.store.getState().vault
+    const storedState = this.store.getState()
+    const encryptedVault = storedState.vault
+    const salt = storedState.salt
     if (!encryptedVault) {
       throw new Error('Cannot unlock without a previous vault.')
     }
 
     await this.clearKeyrings()
     this.password = password
-    const subkey = await this._getSubkey('metamask-encryptor')
+    const subkey = await this._getSubkey('metamask-encryptor', salt)
     const vault = await this.encryptor.decrypt(
       uint8ArrayToStr(subkey),
       encryptedVault
@@ -660,27 +662,32 @@ class KeyringController extends EventEmitter {
   /**
    * Returns argon2id hash of a given string
    * @param {string} str
+   * @param {string?} salt
    */
-  async _getArgon2Hash (str) {
+  async _getArgon2Hash (str, salt) {
     const result = await argon2.hash({
       pass: str,
-      salt: getRandomString(32),
+      salt,
       hashLen: KEY_LENGTH,
       time: 1, // takes about 1.5s on a top-tier mbp (2017)
       mem: 500000,
       type: ARGON2_TYPE
     })
     this.masterKey = result
+    this.salt = salt
+    this.store.updateState({ salt })
   }
 
   /**
    * Gets a subkey using hkdf-sha-512
    * @param {str} info
+   * @param {string?} salt
    * @returns {Uint8Array}
    */
-  async _getSubkey (info) {
+  async _getSubkey (info, salt) {
     if (!this.masterKey) {
-      await this._getArgon2Hash(this.password)
+      salt = salt || this.salt || getRandomString(32)
+      await this._getArgon2Hash(this.password, salt)
     }
     return getHKDF(this.masterKey.hash, strToUint8Array(info), KEY_LENGTH)
   }
