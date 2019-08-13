@@ -6,7 +6,7 @@ const EventEmitter = require('events').EventEmitter
 const ObservableStore = require('obs-store')
 const filter = require('promise-filter')
 const argon2 = require('argon2-wasm')
-const getHKDF = require('brave-crypto').getHKDF
+const braveCrypto = require('brave-crypto')
 const encryptor = require('browser-passworder')
 const sigUtil = require('eth-sig-util')
 const normalizeAddress = sigUtil.normalize
@@ -15,24 +15,13 @@ const SimpleKeyring = require('eth-simple-keyring')
 const HdKeyring = require('eth-hd-keyring')
 const keyringTypes = [
   SimpleKeyring,
-  HdKeyring,
+  HdKeyring
 ]
 
 const ARGON2_TYPE = argon2.types.Argon2id
 const KEY_LENGTH = 32 // default key length in bytes
 const TextEncoder = window.TextEncoder || require('util').TextEncoder
 const TextDecoder = window.TextDecoder || require('util').TextDecoder
-
-/**
- * Generates numBytes of random bytes and converts into a string
- * @param {number} numBytes
- * @returns {string}
- */
-const getRandomString = (numBytes) => {
-  const arr = new Uint16Array(numBytes / Uint16Array.BYTES_PER_ELEMENT)
-  window.crypto.getRandomValues(arr)
-  return String.fromCharCode.apply(null, arr)
-}
 
 /**
  * Converts a string to a uint8array
@@ -51,6 +40,17 @@ const strToUint8Array = (str) => {
 const uint8ArrayToStr = (arr) => {
   return new TextDecoder('utf-8').decode(arr)
 }
+
+/**
+ * Generates numBytes of random bytes and converts into a string
+ * @param {number} numBytes
+ * @returns {string}
+ */
+const getRandomString = (numBytes) => {
+  const arr = braveCrypto.getSeed(numBytes)
+  return uint8ArrayToStr(arr)
+}
+
 
 class KeyringController extends EventEmitter {
 
@@ -689,7 +689,7 @@ class KeyringController extends EventEmitter {
       salt = salt || this.salt || getRandomString(32)
       await this._getArgon2Hash(this.password, salt)
     }
-    return getHKDF(this.masterKey.hash, strToUint8Array(info), KEY_LENGTH)
+    return braveCrypto.getHKDF(this.masterKey.hash, strToUint8Array(info), KEY_LENGTH)
   }
 }
 

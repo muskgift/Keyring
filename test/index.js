@@ -89,6 +89,7 @@ describe('KeyringController', () => {
       await keyringController.createNewVaultAndKeychain(password)
       const vault = keyringController.store.getState().vault
       assert(vault, 'vault created')
+      assert(keyringController.salt.length)
       keyringController.encryptor.encrypt.args.forEach(([subkey]) => {
         const TextEncoder = require('util').TextEncoder
         const subkeyEncoded = new TextEncoder('utf-8').encode(subkey)
