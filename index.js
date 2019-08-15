@@ -194,7 +194,7 @@ class KeyringController extends EventEmitter {
   // All Keyring classes implement a unique `type` string,
   // and this is used to retrieve them from the keyringTypes array.
   async addNewKeyring (type, opts) {
-    if (opts.password) {
+    if (opts && opts.password) {
       this.password = opts.password
       opts.encryptionKey = await this._getSubkey('ethwallet-encryptor')
     }
