@@ -4,6 +4,7 @@ const configManagerGen = require('./lib/mock-config-manager')
 const ethUtil = require('ethereumjs-util')
 const BN = ethUtil.BN
 const mockEncryptor = require('./lib/mock-encryptor')
+const MockSimpleKeyring = require('./lib/mock-simple-keyring')
 const sinon = require('sinon')
 const argon2 = require('argon2-wasm')
 
@@ -118,6 +119,22 @@ describe('KeyringController', () => {
       const allAccounts = await keyringController.getAccounts()
       assert.deepEqual(allAccounts.length, 1 + previousAccounts.length,
         'allAccounts match expectation')
+    })
+    it('Mocked Simple Key Pair (no opts)', async () => {
+      keyringController = new KeyringController({
+        configManager: configManagerGen(),
+        encryptor: mockEncryptor,
+        keyringTypes: [MockSimpleKeyring]
+      })
+
+      await keyringController.createNewVaultAndKeychain(password)
+
+      const previousKeyrings = await keyringController.getKeyringsByType('Mocked Simple Key Pair')
+      assert.equal(previousKeyrings.length, 0, 'no keyrings')
+
+      await keyringController.addNewKeyring('Mocked Simple Key Pair')
+      const keyrings = await keyringController.getKeyringsByType('Mocked Simple Key Pair')
+      assert.equal(keyrings.length, 1, 'found mocked keyring')
     })
   })
 
