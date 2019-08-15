@@ -507,13 +507,14 @@ class KeyringController extends EventEmitter {
     const storedState = this.store.getState()
     const encryptedVault = storedState.vault
     const salt = storedState.salt
+    const argonParams = storedState.argonParams
     if (!encryptedVault) {
       throw new Error('Cannot unlock without a previous vault.')
     }
 
     await this.clearKeyrings()
     this.password = password
-    const subkey = await this._getSubkey('metamask-encryptor', salt)
+    const subkey = await this._getSubkey('metamask-encryptor', salt, argonParams)
     const vault = await this.encryptor.decrypt(
       uint8ArrayToStr(subkey),
       encryptedVault
@@ -650,7 +651,7 @@ class KeyringController extends EventEmitter {
     // clear keyrings from memory
     this.keyrings = []
     this.memStore.updateState({
-      keyrings: [],
+      keyrings: []
     })
   }
 
@@ -663,31 +664,44 @@ class KeyringController extends EventEmitter {
    * Returns argon2id hash of a given string
    * @param {string} str
    * @param {string?} salt
+   * @param {object?} argonParams
    */
-  async _getArgon2Hash (str, salt) {
-    const result = await argon2.hash({
+  async _getArgon2Hash (str, salt, argonParams = {}) {
+    if (!str || !salt) {
+      throw new Error('Missing password or salt for argon2 hashing.')
+    }
+    const params = {
       pass: str,
-      salt,
+      salt
+    }
+    // Default argon2 params
+    const newArgonParams = {
       hashLen: KEY_LENGTH,
       time: 1, // takes about 1.5s on a top-tier mbp (2017)
       mem: 500000,
       type: ARGON2_TYPE
-    })
+    }
+    Object.assign(newArgonParams, argonParams)
+    const result = await argon2.hash(
+      Object.assign(params, newArgonParams)
+    )
     this.masterKey = result
     this.salt = salt
     this.store.updateState({ salt })
+    this.store.updateState({argonParams: newArgonParams})
   }
 
   /**
    * Gets a subkey using hkdf-sha-512
    * @param {str} info
    * @param {string?} salt
+   * @param {object?} argonParams
    * @returns {Uint8Array}
    */
-  async _getSubkey (info, salt) {
+  async _getSubkey (info, salt, argonParams) {
     if (!this.masterKey) {
       salt = salt || this.salt || getRandomString(32)
-      await this._getArgon2Hash(this.password, salt)
+      await this._getArgon2Hash(this.password, salt, argonParams)
     }
     return braveCrypto.getHKDF(this.masterKey.hash, strToUint8Array(info), KEY_LENGTH)
   }

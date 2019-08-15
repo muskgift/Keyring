@@ -1,3 +1,4 @@
+/* global it, describe, beforeEach, afterEach */
 const assert = require('assert')
 const KeyringController = require('../')
 const configManagerGen = require('./lib/mock-config-manager')
@@ -35,7 +36,6 @@ describe('KeyringController', () => {
     // Cleanup mocks
     this.sinon.restore()
   })
-
 
   describe('#submitPassword', function () {
     this.timeout(10000)
@@ -95,6 +95,113 @@ describe('KeyringController', () => {
         const TextEncoder = require('util').TextEncoder
         const subkeyEncoded = new TextEncoder('utf-8').encode(subkey)
         assert(subkeyEncoded.length, 32)
+      })
+    })
+  })
+
+  describe('#_getSubkey', () => {
+    const salt = 'somesalt123'
+
+    beforeEach(async () => {
+      // reset the keyring controller before each test
+      keyringController = new KeyringController({
+        configManager: configManagerGen(),
+        encryptor: mockEncryptor
+      })
+      keyringController.password = password
+      window.localStorage = {}
+    })
+    it('generates different keys for different infos', async () => {
+      const key1 = await keyringController._getSubkey('foo')
+      const key2 = await keyringController._getSubkey('bar')
+      assert.strictEqual(key1.length, 32)
+      assert.strictEqual(key2.length, 32)
+      assert.notDeepStrictEqual(key1, key2)
+      await keyringController.setLocked()
+      keyringController.password = password
+      const key3 = await keyringController._getSubkey('bar')
+      assert.deepStrictEqual(key2, key3)
+    })
+
+    it('generates different keys for different salts', async () => {
+      const key1 = await keyringController._getSubkey('foo')
+      await keyringController.setLocked()
+      keyringController.password = password
+      const key2 = await keyringController._getSubkey('foo', salt)
+      assert.strictEqual(key1.length, 32)
+      assert.strictEqual(key2.length, 32)
+      assert.notDeepStrictEqual(key1, key2)
+    })
+
+    it('can override default argon params', async () => {
+      const key = await keyringController._getSubkey('foo', undefined, {
+        mem: 1000,
+        time: 2
+      })
+      assert.strictEqual(key.length, 32)
+      assert.deepStrictEqual(keyringController.store.getState().argonParams, {
+        mem: 1000,
+        time: 2,
+        type: argon2.types.Argon2id,
+        hashLen: 32
+      })
+    })
+
+    it('throws if password is empty', async () => {
+      assert.rejects(async () => {
+        delete keyringController.password
+        await keyringController._getSubkey('foo', salt)
+      })
+    })
+
+    it('produces expected output for non-empty password', async () => {
+      const key = await keyringController._getSubkey('foo', salt)
+      assert.deepStrictEqual(key, new Uint8Array([
+        34,
+        108,
+        233,
+        231,
+        120,
+        236,
+        87,
+        212,
+        135,
+        3,
+        146,
+        43,
+        40,
+        54,
+        177,
+        5,
+        38,
+        254,
+        79,
+        219,
+        183,
+        179,
+        9,
+        26,
+        214,
+        233,
+        39,
+        255,
+        3,
+        177,
+        146,
+        169
+      ]))
+      assert.deepStrictEqual(keyringController.masterKey, {
+        encoded: '$argon2id$v=19$m=500000,t=1,p=1$c29tZXNhbHQxMjM$rELp2+qCmIoutAxj0ouvLdyiMTiGvMkUExU8HzPM8q0',
+        hashHex: 'ac42e9dbea82988a2eb40c63d28baf2ddca2313886bcc91413153c1f33ccf2ad',
+        hash: new Uint8Array([172,66,233,219,234,130,152,138,46,180,12,99,210,139,175,45,220,162,49,56,134,188,201,20,19,21,60,31,51,204,242,173])
+      })
+      assert.strictEqual(keyringController.salt, salt)
+      assert.strictEqual(keyringController.store.getState().salt, salt)
+      assert.deepStrictEqual(keyringController.store.getState().argonParams, {
+        mem: 500000,
+        time: 1,
+        type: argon2.types.Argon2id,
+        hashLen: 32
       })
     })
   })
