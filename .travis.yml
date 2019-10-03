@@ -1,9 +1,11 @@
 sudo: false
 language: node_js
+before_install:
+- npm install -g yarn
 node_js:
 - node
 script:
-- npm audit
-- npm test
+- yarn audit
+- yarn test
 dist: trusty
 os: linux
