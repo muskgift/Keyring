@@ -1,6 +1,6 @@
 {
   "name": "eth-keyring-controller",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "A module for managing various keyrings of Ethereum accounts, encrypting them, and using them.",
   "main": "index.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "bluebird": "^3.5.0",
     "brave-crypto": "^0.2.2",
     "browser-passworder": "^2.0.3",
-    "eth-hd-keyring": "brave/eth-hd-keyring#b6cf593fc77572a313f101b1e691a68b333a63dd",
+    "eth-hd-keyring": "brave/eth-hd-keyring#d811474329e1a725180d393b67d03c0f3d96106b",
     "eth-sig-util": "^1.4.0",
     "eth-simple-keyring": "^2.0.0",
     "ethereumjs-util": "^5.1.2",
