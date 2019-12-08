@@ -44,7 +44,7 @@ describe('KeyringController', () => {
       assert.equal(keyringController.keyrings.length, 1, 'has one keyring')
       await keyringController.submitPassword(password + 'a')
       assert.equal(keyringController.keyrings.length, 1, 'has one keyring')
-      await keyringController.submitPassword('')
+      await keyringController.submitPassword('testtest')
       assert.equal(keyringController.keyrings.length, 1, 'has one keyring')
     })
 
@@ -67,8 +67,19 @@ describe('KeyringController', () => {
       await keyringController.submitPassword('wrong password')
       assert.notDeepStrictEqual(keyringController.masterKey, key)
     })
-  })
 
+    it('unlocks on retry with correct password', async () => {
+      await keyringController.createNewVaultAndKeychain(password)
+      await keyringController.persistAllKeyrings()
+      const key = keyringController.masterKey
+      await keyringController.setLocked()
+      assert(!keyringController.masterKey)
+      await keyringController.submitPassword('wrong password')
+      assert.notDeepStrictEqual(keyringController.masterKey, key)
+      await keyringController.submitPassword(password)
+      assert.deepStrictEqual(keyringController.masterKey, key)
+    })
+  })
 
   describe('#createNewVaultAndKeychain', function () {
     this.timeout(10000)
