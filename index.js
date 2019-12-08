@@ -175,6 +175,8 @@ class KeyringController extends EventEmitter {
   // Temporarily also migrates any old-style vaults first, as well.
   // (Pre MetaMask 3.0.0)
   submitPassword (password) {
+    this.masterKey = null
+    this.memStore.updateState({ isUnlocked: false })
     return this.unlockKeyrings(password)
     .then((keyrings) => {
       this.keyrings = keyrings
