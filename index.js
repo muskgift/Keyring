@@ -184,6 +184,22 @@ class KeyringController extends EventEmitter {
     })
   }
 
+  /**
+   * Verify Password
+   *
+   * Attempts to decrypt the current vault with a given password
+   * to verify its validity.
+   *
+   * @param {string} password
+   */
+  async verifyPassword (password) {
+    const encryptedVault = this.store.getState().vault
+    if (!encryptedVault) {
+      throw new Error('Cannot unlock without a previous vault.')
+    }
+    await this.encryptor.decrypt(password, encryptedVault)
+  }
+
   // Add New Keyring
   // @string type
   // @object opts
