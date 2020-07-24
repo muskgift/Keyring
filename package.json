@@ -30,7 +30,7 @@
     "ethereumjs-wallet": "^0.6.3",
     "jsdom": "^11.12.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^8.0.1",
     "polyfill-crypto.getrandomvalues": "^1.0.0",
     "sinon": "^7.2.7"
   },
@@ -45,7 +45,7 @@
     "eth-simple-keyring": "^3.5.0",
     "ethereumjs-util": "^5.1.2",
     "loglevel": "^1.5.0",
-    "promise-filter": "1.1.0",
-    "obs-store": "^4.0.3"
+    "obs-store": "^4.0.3",
+    "promise-filter": "1.1.0"
   }
 }
