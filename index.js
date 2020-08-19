@@ -193,11 +193,11 @@ class KeyringController extends EventEmitter {
    * @param {string} password
    */
   async verifyPassword (password) {
-    const encryptedVault = this.store.getState().vault
-    if (!encryptedVault) {
-      throw new Error('Cannot unlock without a previous vault.')
-    }
-    await this.encryptor.decrypt(password, encryptedVault)
+    this.masterKey = null
+    return this.unlockKeyrings(password)
+    .then((keyrings) => {
+      this.keyrings = keyrings
+    })
   }
 
   // Add New Keyring
