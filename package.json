@@ -47,5 +47,8 @@
     "loglevel": "^1.5.0",
     "obs-store": "^4.0.3",
     "promise-filter": "1.1.0"
+  },
+  "resolutions": {
+    "serialize-javascript": "^3.1.0"
   }
 }
