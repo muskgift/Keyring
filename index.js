@@ -194,7 +194,7 @@ class KeyringController extends EventEmitter {
    */
   async verifyPassword (password) {
     this.masterKey = null
-    return this.unlockKeyrings(password)
+    return this.unlockKeyrings(password, false)
     .then((keyrings) => {
       this.keyrings = keyrings
     })
@@ -521,7 +521,7 @@ class KeyringController extends EventEmitter {
   //
   // Attempts to unlock the persisted encrypted storage,
   // initializing the persisted keyrings to RAM.
-  async unlockKeyrings (password) {
+  async unlockKeyrings (password, clearKeyrings = true) {
     const storedState = this.store.getState()
     const encryptedVault = storedState.vault
     const salt = storedState.salt
@@ -530,7 +530,10 @@ class KeyringController extends EventEmitter {
       throw new Error('Cannot unlock without a previous vault.')
     }
 
-    await this.clearKeyrings()
+    if (clearKeyrings) {
+      await this.clearKeyrings()
+    }
+
     this.password = password
     const subkey = await this._getSubkey('metamask-encryptor', salt, argonParams)
     const vault = await this.encryptor.decrypt(
