@@ -84,6 +84,17 @@ describe('KeyringController', () => {
     })
   })
 
+  describe('#verifyPassword', function () {
+    this.timeout(10000)
+
+    it ('should not restore extra keyrings with correct password', async () => {
+      await keyringController.createNewVaultAndKeychain(password)
+      await keyringController.persistAllKeyrings()
+      await keyringController.verifyPassword(password)
+      assert.equal(keyringController.keyrings.length, 1, 'has one keyring')
+    })
+  })
+
   describe('#createNewVaultAndKeychain', function () {
     this.timeout(10000)
 
