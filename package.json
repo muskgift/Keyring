@@ -1,14 +1,14 @@
 {
-  "name": "eth-keyring-controller",
+  "name": "@brave/eth-keyring-controller",
   "version": "5.4.0",
-  "description": "A module for managing various keyrings of Ethereum accounts, encrypting them, and using them.",
+  "description": "Brave's fork of the Metamask module for managing various keyrings of Ethereum accounts, encrypting them, and using them.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --require test/helper.js test/index.js --timeout 6000"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/MetaMask/KeyringController.git"
+    "url": "git+ssh://git@github.com/brave/KeyringController.git"
   },
   "keywords": [
     "ethereum",
@@ -16,12 +16,12 @@
     "accounts",
     "keys"
   ],
-  "author": "Dan Finlay <dan@danfinlay.com>",
+  "author": "Brave Software <dev@brave.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MetaMask/KeyringController/issues"
+    "url": "https://github.com/brave/KeyringController/issues"
   },
-  "homepage": "https://github.com/MetaMask/KeyringController#readme",
+  "homepage": "https://github.com/brave/KeyringController#readme",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "clone": "^2.1.1",
@@ -50,5 +50,8 @@
   },
   "resolutions": {
     "serialize-javascript": "^3.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
