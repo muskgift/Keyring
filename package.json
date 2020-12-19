@@ -1,6 +1,6 @@
 {
   "name": "@brave/eth-keyring-controller",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "description": "Brave's fork of the Metamask module for managing various keyrings of Ethereum accounts, encrypting them, and using them.",
   "main": "index.js",
   "scripts": {
