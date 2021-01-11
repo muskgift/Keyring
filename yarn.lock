@@ -343,10 +343,10 @@ anymatch@~3.1.1:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-argon2-wasm@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/argon2-wasm/-/argon2-wasm-0.9.0.tgz#acb2af67fe258aec5336277ca5fd0ae3ebcbc57a"
-  integrity sha512-bt5xqrDt5FnA1gdLLouOwi2NN1h9BeML8DmKth7CCYhygoXUEDeIxEMB++q+CUPQ8U5gju065Z0MjI+hVSXX7A==
+argon2-wasm-pro@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/argon2-wasm-pro/-/argon2-wasm-pro-1.1.0.tgz#6416a87265bc97317ff0c3775c233b2a86add76b"
+  integrity sha512-ApZAKEgbWQILckY+IdjrETB0oTC8L9YHT3JVQhdun77tilExkXNyM/T/qbkvX+Uv68+IQmVwewQwg6yJnSwVxQ==
 
 argparse@^1.0.7:
   version "1.0.10"
@@ -992,7 +992,7 @@ eth-hd-keyring@brave/eth-hd-keyring#bb10a3502568597197260f39165fd44af74a401e:
   resolved "https://codeload.github.com/brave/eth-hd-keyring/tar.gz/bb10a3502568597197260f39165fd44af74a401e"
   dependencies:
     bip39 "^2.2.0"
-    brave-crypto "^0.3.1"
+    brave-crypto "^0.2.1"
     eth-sig-util "^2.2.0"
     ethereumjs-util "^6.1.0"
     ethereumjs-wallet "^0.6.3"

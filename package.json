@@ -35,7 +35,7 @@
     "sinon": "^7.2.7"
   },
   "dependencies": {
-    "argon2-wasm": "^0.9.0",
+    "argon2-wasm-pro": "^1.1.0",
     "bip39": "^2.4.0",
     "bluebird": "^3.5.0",
     "brave-crypto": "^0.3.1",

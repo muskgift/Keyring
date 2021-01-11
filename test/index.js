@@ -10,7 +10,7 @@ const mockEncryptor = require('./lib/mock-encryptor')
 const MockSimpleKeyring = require('./lib/mock-simple-keyring')
 const sinon = require('sinon')
 const Wallet = require('ethereumjs-wallet')
-const argon2 = require('argon2-wasm')
+const argon2 = require('argon2-wasm-pro')
 
 describe('KeyringController', () => {
   let keyringController
@@ -164,7 +164,7 @@ describe('KeyringController', () => {
       assert.deepStrictEqual(keyringController.store.getState().argonParams, {
         mem: 1000,
         time: 2,
-        type: argon2.types.Argon2id,
+        type: 1,
         hashLen: 32
       })
     })
@@ -222,7 +222,7 @@ describe('KeyringController', () => {
       assert.deepStrictEqual(keyringController.store.getState().argonParams, {
         mem: 500000,
         time: 1,
-        type: argon2.types.Argon2id,
+        type: 1,
         hashLen: 32
       })
     })

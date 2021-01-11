@@ -5,7 +5,7 @@ const bip39 = require('bip39')
 const EventEmitter = require('events').EventEmitter
 const ObservableStore = require('obs-store')
 const filter = require('promise-filter')
-const argon2 = require('argon2-wasm')
+const argon2 = require('argon2-wasm-pro')
 const braveCrypto = require('brave-crypto')
 const encryptor = require('browser-passworder')
 const sigUtil = require('eth-sig-util')
@@ -18,7 +18,7 @@ const keyringTypes = [
   HdKeyring
 ]
 
-const ARGON2_TYPE = argon2.types.Argon2id
+const ARGON2_TYPE = 1
 const KEY_LENGTH = 32 // default key length in bytes
 const TextEncoder = window.TextEncoder || require('util').TextEncoder
 const TextDecoder = window.TextDecoder || require('util').TextDecoder
