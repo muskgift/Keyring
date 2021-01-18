@@ -5,7 +5,6 @@ const bip39 = require('bip39')
 const EventEmitter = require('events').EventEmitter
 const ObservableStore = require('obs-store')
 const filter = require('promise-filter')
-const argon2 = require('argon2-wasm')
 const braveCrypto = require('brave-crypto')
 const encryptor = require('browser-passworder')
 const sigUtil = require('eth-sig-util')
@@ -18,10 +17,26 @@ const keyringTypes = [
   HdKeyring
 ]
 
-const ARGON2_TYPE = argon2.types.Argon2id
 const KEY_LENGTH = 32 // default key length in bytes
 const TextEncoder = window.TextEncoder || require('util').TextEncoder
 const TextDecoder = window.TextDecoder || require('util').TextDecoder
+
+
+const MODULE_CACHE = new WeakRef(arguments[5])
+
+function clearFromCache(instance) {
+  let moduleCache = MODULE_CACHE.deref()
+  if (!moduleCache) {
+    return
+  }
+
+  for (let key in moduleCache) {
+    if (moduleCache[key].exports == instance) {
+      delete moduleCache[key]
+      return
+    }
+  }
+}
 
 /**
  * Converts a string to a uint8array
@@ -700,11 +715,12 @@ class KeyringController extends EventEmitter {
       salt
     }
     // Default argon2 params
+    const argon2 = require('argon2-wasm')
     const newArgonParams = {
       hashLen: KEY_LENGTH,
       time: 1, // takes about 1.5s on a top-tier mbp (2017)
       mem: 500000,
-      type: ARGON2_TYPE
+      type: argon2.types.Argon2id
     }
     Object.assign(newArgonParams, argonParams)
     const result = await argon2.hash(
@@ -714,6 +730,7 @@ class KeyringController extends EventEmitter {
     this.salt = salt
     this.store.updateState({ salt })
     this.store.updateState({argonParams: newArgonParams})
+    clearFromCache(argon2)
   }
 
   /**
