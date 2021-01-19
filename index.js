@@ -21,49 +21,47 @@ const KEY_LENGTH = 32 // default key length in bytes
 const TextEncoder = window.TextEncoder || require('util').TextEncoder
 const TextDecoder = window.TextDecoder || require('util').TextDecoder
 
-
-let moduleCacheTmp = arguments[5]
-const MODULE_CACHE = moduleCacheRef()
-
-function moduleCacheRef() {
+const moduleCacheRef = (moduleCache) => {
   if (window.WeakRef) {
-    let ref = new WeakRef(moduleCacheTmp)
-    moduleCacheTmp = null
+    let ref = new window.WeakRef(moduleCache)
+    moduleCache = null
     return ref
   }
 
   try {
     const weak = require('weak')
     let ref = {
-      _ref: weak(moduleCacheTmp),
-      deref() {
+      _ref: weak(moduleCache),
+      deref () {
         return weak.isDead(this._ref) ? null : this._ref
       }
     }
 
-    moduleCacheTmp = null;
+    moduleCache = null
     return ref
   } catch (e) {
   }
 
   return {
-    deref() { return moduleCacheTmp }
+    deref () { return moduleCache }
   }
 }
 
-function clearFromCache(instance) {
-  let moduleCache = MODULE_CACHE.deref()
+const clearFromCache = (instance) => {
+  const moduleCache = MODULE_CACHE.deref()
   if (!moduleCache) {
     return
   }
 
   for (let key in moduleCache) {
-    if (moduleCache[key].exports == instance) {
+    if (moduleCache[key].exports === instance) {
       delete moduleCache[key]
       return
     }
   }
 }
+
+const MODULE_CACHE = moduleCacheRef(arguments[5])
 
 /**
  * Converts a string to a uint8array
