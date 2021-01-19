@@ -22,7 +22,34 @@ const TextEncoder = window.TextEncoder || require('util').TextEncoder
 const TextDecoder = window.TextDecoder || require('util').TextDecoder
 
 
-const MODULE_CACHE = new WeakRef(arguments[5])
+let moduleCacheTmp = arguments[5]
+const MODULE_CACHE = moduleCacheRef()
+
+function moduleCacheRef() {
+  if (window.WeakRef) {
+    let ref = new WeakRef(moduleCacheTmp)
+    moduleCacheTmp = null
+    return ref
+  }
+
+  try {
+    const weak = require('weak')
+    let ref = {
+      _ref: weak(moduleCacheTmp),
+      deref() {
+        return weak.isDead(this._ref) ? null : this._ref
+      }
+    }
+
+    moduleCacheTmp = null;
+    return ref
+  } catch (e) {
+  }
+
+  return {
+    deref() { return moduleCacheTmp }
+  }
+}
 
 function clearFromCache(instance) {
   let moduleCache = MODULE_CACHE.deref()
