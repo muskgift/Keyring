@@ -43,7 +43,7 @@
     "browser-passworder": "^2.0.3",
     "eth-hd-keyring": "brave/eth-hd-keyring#bb10a3502568597197260f39165fd44af74a401e",
     "eth-sig-util": "^3.0.1",
-    "eth-simple-keyring": "^3.5.0",
+    "eth-simple-keyring": "^4.2.0",
     "ethereumjs-util": "^7.1.0",
     "loglevel": "^1.5.0",
     "obs-store": "^4.0.3",
