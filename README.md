@@ -1,4 +1,4 @@
-# Eth Keyring Controller [![CircleCI](https://circleci.com/gh/MetaMask/KeyringController.svg?style=svg)](https://circleci.com/gh/MetaMask/KeyringController)
+# Eth Keyring Controller [![Build and test](https://github.com/brave/KeyringController/actions/workflows/action.yml/badge.svg)](https://github.com/brave/KeyringController/actions/workflows/action.yml)
 
 A module for managing groups of Ethereum accounts called "Keyrings", defined originally for MetaMask's multiple-account-type feature.
 
