@@ -29,7 +29,7 @@ const moduleCacheRef = (moduleCache) => {
   }
 
   try {
-    const weak = require('weak')
+    const weak = require('weak-napi')
     let ref = {
       _ref: weak(moduleCache),
       deref () {
