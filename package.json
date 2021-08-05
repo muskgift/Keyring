@@ -50,7 +50,11 @@
     "promise-filter": "1.1.0"
   },
   "resolutions": {
-    "serialize-javascript": "^3.1.0"
+    "elliptic": "^6.5.4",
+    "glob-parent": "^5.1.2",
+    "lodash": "^4.17.21",
+    "serialize-javascript": "^3.1.0",
+    "jsdom/ws": "^5.2.3"
   },
   "publishConfig": {
     "access": "public"
