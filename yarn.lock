@@ -498,6 +498,15 @@ brave-crypto@^0.3.1:
     niceware "^1.0.7"
     tweetnacl "^1.0.3"
 
+brave-crypto@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/brave-crypto/-/brave-crypto-0.3.2.tgz#4bd421f5dff3197c51bc248a5285e261399680e1"
+  integrity sha512-atZe+Il3USJsd+1cfipZdWLWJaQxOba2HPRIPwQfbFS9YqFM7y0tSW02mjbVxI59bqAEAm+oieYOD4+DXLkosQ==
+  dependencies:
+    bip39 "^2.6.0"
+    niceware "^1.0.7"
+    tweetnacl "^1.0.3"
+
 brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
@@ -999,17 +1008,16 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-eth-hd-keyring@brave/eth-hd-keyring#bb10a3502568597197260f39165fd44af74a401e:
-  version "2.0.0"
-  resolved "https://codeload.github.com/brave/eth-hd-keyring/tar.gz/bb10a3502568597197260f39165fd44af74a401e"
+eth-hd-keyring@onyb/eth-hd-keyring#eip1559-compat:
+  version "2.1.0"
+  resolved "https://codeload.github.com/onyb/eth-hd-keyring/tar.gz/f364174a0548971045573567316ef2ed5337ed07"
   dependencies:
     bip39 "^2.2.0"
-    brave-crypto "^0.3.1"
+    brave-crypto "^0.3.2"
     eth-sig-util "^2.2.0"
-    ethereumjs-util "^6.1.0"
-    ethereumjs-wallet "^0.6.3"
+    ethereumjs-util "^7.1.0"
+    ethereumjs-wallet "^1.0.1"
     tweetnacl "^1.0.1"
-    xtend "^4.0.1"
 
 eth-sig-util@^2.2.0:
   version "2.5.3"
@@ -1103,7 +1111,7 @@ ethereumjs-util@^5.1.1:
     rlp "^2.0.0"
     safe-buffer "^5.1.1"
 
-ethereumjs-util@^6.0.0, ethereumjs-util@^6.1.0:
+ethereumjs-util@^6.0.0:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.2.1.tgz#fcb4e4dd5ceacb9d2305426ab1a5cd93e3163b69"
   integrity sha512-W2Ktez4L01Vexijrm5EB6w7dg4n/TgpoYU4avuT5T3Vmnw/eCRtiBrJfQYS/DCSvDIOLn2k57GcHdeBcgVxAqw==
@@ -1127,21 +1135,6 @@ ethereumjs-util@^7.0.2, ethereumjs-util@^7.0.9, ethereumjs-util@^7.1.0:
     ethereum-cryptography "^0.1.3"
     ethjs-util "0.1.6"
     rlp "^2.2.4"
-
-ethereumjs-wallet@^0.6.3:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.5.tgz#685e9091645cee230ad125c007658833991ed474"
-  integrity sha512-MDwjwB9VQVnpp/Dc1XzA6J1a3wgHQ4hSvA1uWNatdpOrtCbPVuQSKSyRnjLvS0a+KKMw2pvQ9Ybqpb3+eW8oNA==
-  dependencies:
-    aes-js "^3.1.1"
-    bs58check "^2.1.2"
-    ethereum-cryptography "^0.1.3"
-    ethereumjs-util "^6.0.0"
-    randombytes "^2.0.6"
-    safe-buffer "^5.1.2"
-    scryptsy "^1.2.1"
-    utf8 "^3.0.0"
-    uuid "^3.3.2"
 
 ethereumjs-wallet@^1.0.1:
   version "1.0.1"
@@ -2030,7 +2023,7 @@ path-to-regexp@^1.7.0:
   dependencies:
     isarray "0.0.1"
 
-pbkdf2@^3.0.17, pbkdf2@^3.0.3, pbkdf2@^3.0.9:
+pbkdf2@^3.0.17, pbkdf2@^3.0.9:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.1.1.tgz#cb8724b0fada984596856d1a6ebafd3584654b94"
   integrity sha512-4Ejy1OPxi9f2tt1rRV7Go7zmfDQ+ZectEQz3VGUQhgq62HtIRPDyG/JtnwIxs6x3uNMwo2V7q1fMvKjb+Tnpqg==
@@ -2276,13 +2269,6 @@ scrypt-js@^3.0.0, scrypt-js@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
   integrity sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==
-
-scryptsy@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/scryptsy/-/scryptsy-1.2.1.tgz#a3225fa4b2524f802700761e2855bdf3b2d92163"
-  integrity sha1-oyJfpLJST4AnAHYeKFW987LZIWM=
-  dependencies:
-    pbkdf2 "^3.0.3"
 
 secp256k1@^4.0.1:
   version "4.0.2"

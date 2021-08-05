@@ -41,7 +41,7 @@
     "bluebird": "^3.5.0",
     "brave-crypto": "^0.3.1",
     "browser-passworder": "^2.0.3",
-    "eth-hd-keyring": "brave/eth-hd-keyring#bb10a3502568597197260f39165fd44af74a401e",
+    "eth-hd-keyring": "onyb/eth-hd-keyring#eip1559-compat",
     "eth-sig-util": "^3.0.1",
     "eth-simple-keyring": "^4.2.0",
     "ethereumjs-util": "^7.1.0",
