@@ -9,7 +9,7 @@ const normalizeAddress = sigUtil.normalize
 const mockEncryptor = require('./lib/mock-encryptor')
 const MockSimpleKeyring = require('./lib/mock-simple-keyring')
 const sinon = require('sinon')
-const Wallet = require('ethereumjs-wallet')
+const Wallet = require('ethereumjs-wallet').default
 const argon2 = require('argon2-wasm')
 
 describe('KeyringController', () => {
